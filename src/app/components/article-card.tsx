@@ -36,9 +36,6 @@ export default function ArticleCard({
       {/* 内容 */}
       <div className="flex flex-col justify-between p-3 w-full md:w-3/4">
         <div>
-          {/* 分类 */}
-          <span className="text-xs text-indigo-600 font-medium">{category}</span>
-
           {/* 标题 */}
           <h2 className="text-lg font-semibold mt-1 mb-1 text-gray-800 line-clamp-2">
             {title}
@@ -47,12 +44,16 @@ export default function ArticleCard({
           {/* 摘要 */}
           <p className="text-gray-600 text-xs mb-2 line-clamp-2">{summary}</p>
 
+          {/* 分类 */}
+          <span className="text-xs text-gray-500">分类：</span>
+          <span className="text-xs text-indigo-600 font-medium">{category}</span>
+
           {/* 标签 */}
-          <div className="flex flex-wrap gap-1 mb-2">
+          <div className="flex flex-wrap gap-2 mb-2">
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="bg-gray-100 text-xs text-gray-700 px-2 py-0.5 rounded-full hover:bg-gray-200 transition"
+                className="bg-blue-200 text-xs  px-2 py-0.5 rounded-full hover:bg-gray-200 transition"
               >
                 #{tag}
               </span>

@@ -1,6 +1,43 @@
+'use client';
+
+import { useEffect } from "react";
 import ArticleCard from "./components/article-card";
+import { ApiResponse } from "@/types/api";
+import { ArticleWithRelations } from "@/types/database";
+
+async function fetchArticles(page: number, pageSize: number): Promise<ArticleWithRelations[]> {
+  const response = await fetch(`/api/articles?page=${page}&pageSize=${pageSize}`);
+  const data:ApiResponse<ArticleWithRelations[]>= await response.json();
+  console.log("Fetched articles:", data);
+  if (!data.success) {
+    return [];
+  }
+  return  data.data || [];
+} 
+
+
+async function fetchArticleById(id: number): Promise<ArticleWithRelations | null> {
+  const response = await fetch(`/api/articles/${id}`);  
+  const data: ApiResponse<ArticleWithRelations> = await response.json();
+  console.log("Fetched article by ID:", data);
+  if (!data.success) {
+    return null;
+  }
+  return data.data || null; 
+}
 
 export default function Home() {
+
+  useEffect(() => {
+    // This effect runs once when the component mounts
+    const fecthArticles =  fetchArticles(1,10);
+    console.log("Articles fetched on mount:", fecthArticles);
+    const article= fetchArticleById(1);
+    console.log("Article fetched by ID on mount:", article);
+    // You can add any initialization logic here
+  }, []);
+
+
   return (
     <div>
       <main className="p-8 bg-gray-100 min-h-screen">
