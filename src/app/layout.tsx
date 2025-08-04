@@ -1,5 +1,4 @@
-import './globals.css'; // 👈 必须是相对路径，放在文件顶部
-
+import "./globals.css"; // 👈 必须是相对路径，放在文件顶部
 
 export default function RootLayout({
   children,
@@ -10,13 +9,15 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <header>
-          <div className="flex items-center justify-between  w-full bg-red-50">
-            <span className="bg-amber-500 text-red-400">📝 我的博客</span>
-            <button>登录</button>
+          <div className="flex items-center justify-between  w-full pt-4 pb-4">
+            <h1 className="text-3xl font-bold ml-4">📝 我的博客</h1>
+            <div>
+              <button className="btn">管理后台</button>
+              <button className="btn ml-4 mr-4">登录</button>
+            </div>
           </div>
         </header>
         <main>{children}</main>
-        <div className='w-full bg-cyan-600 h-40'></div>
       </body>
     </html>
   );
