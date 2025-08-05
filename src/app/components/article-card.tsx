@@ -1,34 +1,19 @@
+
+import { ArticleWithRelations } from "@/types/database";
 type Props = {
-  title: string;
-  summary: string;
-  imageUrl: string;
-  author: {
-    name: string;
-    avatar: string;
-  };
-  createdAt: string;
-  category: string;
-  tags: string[];
-  commentsCount: number;
+  articleWithRelations: ArticleWithRelations;
 };
 
 export default function ArticleCard({
-  title,
-  summary,
-  imageUrl,
-  author,
-  createdAt,
-  category,
-  tags,
-  commentsCount,
+  articleWithRelations
 }: Props) {
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden border flex flex-col md:flex-row transition hover:shadow-lg max-w-3xl mx-auto">
+    <div className="bg-white rounded-xl shadow-md overflow-hidden border flex flex-row transition hover:shadow-lg max-w-full h-60 md:h-48 ">
       {/* 封面图 */}
       <div className="w-full md:w-1/4 h-32 md:h-auto overflow-hidden">
         <img
-          src={imageUrl}
-          alt={title}
+          src={articleWithRelations.cover_url}
+          alt={articleWithRelations.title}
           className="w-full h-full object-cover"
         />
       </div>
@@ -37,31 +22,31 @@ export default function ArticleCard({
       <div className="flex flex-col justify-between p-3 w-full md:w-3/4">
         <div>
           {/* 标题 */}
-          <h2 className="text-lg font-semibold mt-1 mb-1 text-gray-800 line-clamp-2">
-            {title}
+          <h2 className="text-lg font-semibold mt-2 mb-2 text-gray-800 line-clamp-2">
+            {articleWithRelations.title}
           </h2>
 
           {/* 摘要 */}
-          <p className="text-gray-600 text-xs mb-2 line-clamp-2">{summary}</p>
+          <p className="text-gray-600 text-xs mb-2 line-clamp-2">{articleWithRelations.summary}</p>
 
           {/* 分类 */}
           <span className="text-xs text-gray-500">分类：</span>
-          <span className="text-xs text-indigo-600 font-medium">{category}</span>
+          <span className="text-xs text-indigo-600 font-medium">{articleWithRelations.category?.text}</span>
 
           {/* 标签 */}
-          <div className="flex flex-wrap gap-2 mb-2">
-            {tags.map((tag) => (
+          {/* <div className="flex flex-wrap gap-2 mb-2">
+            {articleWithRelations?.tags?.map((tag) => (
               <span
-                key={tag}
+                key={tag.id}
                 className="bg-blue-200 text-xs  px-2 py-0.5 rounded-full hover:bg-gray-200 transition"
               >
-                #{tag}
+                #{tag.text}
               </span>
             ))}
-          </div>
+          </div> */}
         </div>
 
-        {/* 作者 & 评论 */}
+        {/* 作者 & 评论
         <div className="flex justify-between items-center text-xs text-gray-500 mt-1">
           <div className="flex items-center space-x-2">
             <img
@@ -85,7 +70,7 @@ export default function ArticleCard({
             </svg>
             <span>{commentsCount}</span>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

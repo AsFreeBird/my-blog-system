@@ -36,7 +36,7 @@ async function fetchCategories(): Promise<Category[]> {
   return data.data || [];
 }
 export default function Home() {
-  // const [articles, setArticles] = useState<ArticleWithRelations[]>([]);
+  const [articles, setArticles] = useState<ArticleWithRelations[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   useEffect(() => {
     fetchCategories()
@@ -56,7 +56,13 @@ export default function Home() {
       });
 
     // This effect runs once when the component mounts
-    const fecthArticles =  fetchArticles(1,10);
+    fetchArticles(1,10).then((articles) => {
+      setArticles(articles);
+      console.log("Fetched articles on mount:", articles);
+    } 
+    ).catch((error) => {
+      console.error("Error fetching articles on mount:", error);
+    });
     // console.log("Articles fetched on mount:", fecthArticles);
     // const article= fetchArticleById(1);
     // console.log("Article fetched by ID on mount:", article);
@@ -109,6 +115,11 @@ export default function Home() {
                 </li>
               ))}
             </ul>
+          </div>
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 max-w-screen-xl w-full px-16 mt-5">
+            {articles.map((article) => (
+              <ArticleCard key={article.id} articleWithRelations={article} />
+            ))}
           </div>
           {/* <ArticleCard /> */}
         </div>

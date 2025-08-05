@@ -11,6 +11,12 @@ export async function getArticlesWithRelation(
       `
     *,
     category:category_id (*)
+    ,
+      article_tags (
+        tag:tag_id (
+          id, text, create_date
+        )
+      )
     `
     )
     .order("create_date", { ascending: false })
@@ -19,7 +25,8 @@ export async function getArticlesWithRelation(
     console.error("Error fetching articles:", error);
     throw new Error(error.message);
   }
-  console.log("Fetched articles with relations:", data);
+  console.log("Fetched articles with relations:");
+  console.log(JSON.stringify(data, null, 2));
   return data || [];
 }
 
