@@ -1,20 +1,25 @@
 "use client";
 import Link from "next/link";
 import "./globals.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { Category } from "@/types/database";
 import ArticleCard from "./components/article-card";
 import { ApiResponse } from "@/types/api";
 import { ArticleWithRelations } from "@/types/database";
 
-async function fetchArticles(page: number, pageSize: number): Promise<ArticleWithRelations[]> {
-  const response = await fetch(`/api/articles?page=${page}&pageSize=${pageSize}`);
-  const data:ApiResponse<ArticleWithRelations[]>= await response.json();
+async function fetchArticles(
+  page: number,
+  pageSize: number
+): Promise<ArticleWithRelations[]> {
+  const response = await fetch(
+    `/api/articles?page=${page}&pageSize=${pageSize}`
+  );
+  const data: ApiResponse<ArticleWithRelations[]> = await response.json();
   console.log("Fetched articles:", data);
   if (!data.success) {
     return [];
   }
-  return  data.data || [];
+  return data.data || [];
 }
 
 // async function fetchArticleById(id: number): Promise<ArticleWithRelations | null> {
@@ -38,6 +43,44 @@ async function fetchCategories(): Promise<Category[]> {
 export default function Home() {
   const [articles, setArticles] = useState<ArticleWithRelations[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [page, setPage] = useState(0); // 当前页码
+  const [hasMore, setHasMore] = useState(true); // 是否还有数据
+  const pageSize = 10; // 每页条数
+  const loader = useRef(null);
+
+  const loadArticles = async (page: number) => {
+    try {
+      const newArticles = await fetchArticles(page, pageSize);
+      setArticles((prev) => [...prev, ...newArticles]);
+      setHasMore(newArticles.length === pageSize);
+    } catch (err) {
+      console.error("加载文章失败:", err);
+      setHasMore(false);
+    }
+  };
+
+  useEffect(() => {
+    // 初始加载文章
+    loadArticles(page);
+  }, [page]);
+
+  //是否有更多
+  useEffect(()=>{
+    const observe = new IntersectionObserver((entries)=> {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage((prev) => prev + 1);
+      }
+    }, {threshold: 1.0});
+    if (loader.current) {
+      observe.observe(loader.current);
+    }
+    return () => {
+      if (loader.current) {
+        observe.unobserve(loader.current);
+      }
+    };
+  },[hasMore]);
+
   useEffect(() => {
     fetchCategories()
       .then((categories) => {
@@ -56,35 +99,17 @@ export default function Home() {
       });
 
     // This effect runs once when the component mounts
-    fetchArticles(1,10).then((articles) => {
-      setArticles(articles);
-      console.log("Fetched articles on mount:", articles);
-    } 
-    ).catch((error) => {
-      console.error("Error fetching articles on mount:", error);
-    });
+   
     // console.log("Articles fetched on mount:", fecthArticles);
     // const article= fetchArticleById(1);
     // console.log("Article fetched by ID on mount:", article);
     // You can add any initialization logic here
   }, []);
 
+
   return (
     <div>
       <main className="pt-4 bg-gray-100 min-h-screen">
-        {/* <ArticleCard
-          title="深入理解 React 性能优化"
-          summary="本文将从 React 的渲染机制入手，讲解如何使用 memo、useCallback 等方法优化性能..."
-          imageUrl="https://picsum.photos/id/1005/600/400" // ✅ 已验证可加载
-          author={{
-            name: "李明",
-            avatar: "https://i.pravatar.cc/150?img=3", // ✅ 稳定头像源
-          }}
-          createdAt="2025年7月24日"
-          category="前端开发"
-          tags={["React", "性能优化", "Hooks"]}
-          commentsCount={12}
-        /> */}
         <div className="flex flex-col items-center justify-between w-full">
           <input type="text" placeholder="搜索文章" className="input w-1/3" />
           <h1 className="mt-4 font-bold text-2xl">
@@ -121,7 +146,13 @@ export default function Home() {
               <ArticleCard key={article.id} articleWithRelations={article} />
             ))}
           </div>
-          {/* <ArticleCard /> */}
+          <div ref={loader} className="h-16 w-full flex items-center justify-center">
+              {hasMore  ? (
+                <div className="text-gray-500">加载更多...</div> 
+              ) : (
+                <div className="text-gray-500">没有更多文章了</div>
+              )}
+          </div>
         </div>
       </main>
     </div>

@@ -22,19 +22,19 @@ export default function ArticleCard({
       <div className="flex flex-col justify-between p-3 w-full md:w-3/4">
         <div>
           {/* 标题 */}
-          <h2 className="text-lg font-semibold mt-2 mb-2 text-gray-800 line-clamp-2">
+          <h2 className="text-lg font-semibold mt-3 mb-3 text-gray-800 line-clamp-2">
             {articleWithRelations.title}
           </h2>
 
           {/* 摘要 */}
-          <p className="text-gray-600 text-xs mb-2 line-clamp-2">{articleWithRelations.summary}</p>
+          <p className="text-gray-600 text-xs mb-3 line-clamp-2">{articleWithRelations.summary}</p>
 
           {/* 分类 */}
           <span className="text-xs text-gray-500">分类：</span>
           <span className="text-xs text-indigo-600 font-medium">{articleWithRelations.category?.text}</span>
 
           {/* 标签 */}
-          {/* <div className="flex flex-wrap gap-2 mb-2">
+          <div className="flex flex-wrap gap-2 mt-3">
             {articleWithRelations?.tags?.map((tag) => (
               <span
                 key={tag.id}
@@ -43,7 +43,7 @@ export default function ArticleCard({
                 #{tag.text}
               </span>
             ))}
-          </div> */}
+          </div>
         </div>
 
         {/* 作者 & 评论

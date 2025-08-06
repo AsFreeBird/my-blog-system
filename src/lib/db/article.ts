@@ -1,5 +1,5 @@
 import supabase from "../supabaseClient";
-import { Article, ArticleWithRelations } from "@/types/database";
+import { Article, ArticleWithRelations, Tag } from "@/types/database";
 
 export async function getArticlesWithRelation(
   from: number,
@@ -26,10 +26,14 @@ export async function getArticlesWithRelation(
     throw new Error(error.message);
   }
   console.log("Fetched articles with relations:");
-  console.log(JSON.stringify(data, null, 2));
-  return data || [];
+  
+  const normalized = (data || []).map((article) => ({
+    ...article,
+    tags: article.article_tags?.map((e: { tag: Tag }) => e.tag) || [],
+  }));
+  console.log(JSON.stringify(normalized, null, 2));
+  return normalized;
 }
-
 
 export async function getArticleById(id: number): Promise<Article | null> {
   const { data, error } = await supabase
@@ -90,8 +94,6 @@ export async function getArticlesbyKeywords(
   }
   return data || [];
 }
-
-
 
 export async function createArticle(article: Article): Promise<Article | null> {
   const { data, error } = await supabase
