@@ -3,9 +3,11 @@ import { Article, ArticleWithRelations, Tag } from "@/types/database";
 
 export async function getArticlesWithRelation(
   from: number,
-  to: number
+  to: number,
+  categoryId?: number,
+  keyword?: string
 ): Promise<ArticleWithRelations[]> {
-  const { data, error } = await supabase
+  let query = supabase
     .from("articles")
     .select(
       `
@@ -19,19 +21,32 @@ export async function getArticlesWithRelation(
       )
     `
     )
-    .order("create_date", { ascending: false })
-    .range(from, to);
+    .order("create_date", { ascending: false });
+
+  if (categoryId && categoryId > 0) {
+    query = query.eq("category_id", categoryId.toString());
+  }
+  
+  if (keyword && keyword.trim() !== "") {
+    query = query.ilike("title", `%${keyword}%`);
+  }
+
+  query = query.range(from, to);
+  const { data, error } = await query;
+
   if (error) {
     console.error("Error fetching articles:", error);
     throw new Error(error.message);
   }
-  console.log("Fetched articles with relations:");
-  
+
   const normalized = (data || []).map((article) => ({
     ...article,
     tags: article.article_tags?.map((e: { tag: Tag }) => e.tag) || [],
   }));
-  console.log(JSON.stringify(normalized, null, 2));
+  console.log(
+    "Normalized articles with relations:",
+    JSON.stringify(normalized, null, 2)
+  );
   return normalized;
 }
 

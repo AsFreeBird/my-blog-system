@@ -5,6 +5,7 @@ import { Article } from "@/types/database";
 
 export async function GET(request: NextRequest,{params}:{params:{id:number}}){
     const { id } = params;
+    
     console.log("Fetching article with ID:", id);
     try {
         const article = await getArticleById(id);

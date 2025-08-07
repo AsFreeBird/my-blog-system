@@ -7,6 +7,7 @@ export async function getCategories(): Promise<Category[] | null> {
         console.error("Error fetching categories:", error);
         return null;
     }
+    console.log("Fetched categories from DB:", data);
     return data || [];
 }
 
