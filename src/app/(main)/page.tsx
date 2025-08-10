@@ -1,13 +1,14 @@
 "use client";
-import Link from "next/link";
-import "./globals.css";
+import "./../globals.css";
 import { useEffect, useState, useRef } from "react";
 import { Category } from "@/types/database";
-import ArticleCard from "../components/article-card";
+import ArticleCard from "../../components/article-card";
 import { ArticleWithRelations } from "@/types/database";
 
 import { fetchArticles, pageSize } from "@/services/artices";
 import { fetchCategories } from "@/services/categories";
+
+let hasFetchedRef = false;
 
 export default function Home() {
   const [articles, setArticles] = useState<ArticleWithRelations[]>([]);
@@ -17,18 +18,19 @@ export default function Home() {
   );
   const [searchKeyword, setSearchKeyword] = useState<string>("");
 
-  const [page, setPage] = useState(0); // 当前页码
+  const [page, setPage] = useState(1); // 当前页码
   const [hasMore, setHasMore] = useState(true); // 是否还有数据
 
   const loader = useRef(null);
 
   useEffect(() => {
     // 初始加载文章
-    let ignore = false;
+    if (hasFetchedRef) return;
+    hasFetchedRef = true;
     console.log("Fetching articles on mount...");
-    fetchArticles(page, selectedCategory?.id || 0,searchKeyword)
+    fetchArticles(page, selectedCategory?.id || 0, searchKeyword)
       .then((newArticles) => {
-        if (ignore) return; // 忽略已被清理的副作用
+        hasFetchedRef = false;
         console.log("Fetched articles on mount:", newArticles);
         console.log("Fetched articles on pageSize:", newArticles.length);
         // 分类变化后第一次加载，清空旧数据
@@ -46,11 +48,9 @@ export default function Home() {
         }
       })
       .catch((error) => {
+        hasFetchedRef = false;
         console.error("Error fetching articles on mount:", error);
       });
-    return () => {
-      ignore = true;
-    };
   }, [page]);
 
   //是否有更多
@@ -95,13 +95,13 @@ export default function Home() {
     if (e.key === "Enter") {
       console.log("搜索文章:", searchKeyword);
       setSearchKeyword(searchKeyword.trim());
-      setPage(0); // 重置页码
+      setPage(1); // 重置页码
       setHasMore(true); // 重置是否有更多
       setArticles([]); // 清空当前文章列表
     }
   };
 
-  const onTypeSearch = (category:Category) => {
+  const onTypeSearch = (category: Category) => {
     // 处理分类点击逻辑
     console.log("Selected category:", category.text);
     //更新分类选中状态
@@ -113,7 +113,7 @@ export default function Home() {
     });
     //根据分类筛选文章
     setSelectedCategory(category.id === 0 ? null : category);
-    setPage(0); // 重置页码
+    setPage(1); // 重置页码
     setHasMore(true); // 重置是否有更多
     setArticles([]); // 清空当前文章列表
   };
@@ -133,7 +133,7 @@ export default function Home() {
           </h1>
           <div>
             <ul className="flex flex-wrap justify-center mt-4">
-              {categories.map((category: any) => (
+              {categories.map((category: Category) => (
                 <li key={category.id} className="mt-2">
                   <button
                     className={`mr-4 btn_gray_rounded ${
