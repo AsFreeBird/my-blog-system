@@ -1,49 +1,92 @@
 "use client";
 
 import "./../../globals.css";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useState } from "react";
-import { fetchArticles } from "@/services/artices";
+import { useRouter } from "next/navigation";
+import { fetchArticles, pageSize } from "@/services/artices";
 import { ArticleWithRelations } from "@/types/database";
 import dayjs from "dayjs";
+
+let hasFetchedRef = false;
+
 export default function ArticlesManager() {
+  const router = useRouter();
   const [articles, setArticles] = useState<ArticleWithRelations[]>([]);
-  const [page, setPage] = useState(1); // 当前页码
   const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [reloadFlag, setReloadFlag] = useState(0);
+  const [page, setPage] = useState(1); // 当前页码
+  const [hasMore, setHasMore] = useState(true); // 是否还有数据
+
+  const loader = useRef(null);
 
   useEffect(() => {
     // 初始加载文章
+    if (hasFetchedRef) return;
+    hasFetchedRef = true;
     console.log("Fetching articles on mount...");
     fetchArticles(page, 0, searchKeyword)
       .then((newArticles) => {
         console.log("Fetched articles on mount:", newArticles);
         console.log("Fetched articles on pageSize:", newArticles.length);
-        // 分类变化后第一次加载，清空旧数据
-        if (page === 0) {
+        hasFetchedRef = false;
+        if (page === 1) {
           setArticles(newArticles);
         } else {
           setArticles((prev) => [...prev, ...newArticles]);
         }
+        // 判断是否还有更多
+        if (newArticles.length < pageSize) {
+          setHasMore(false);
+        } else {
+          setHasMore(true);
+        }
       })
       .catch((error) => {
+        hasFetchedRef = false;
         console.error("Error fetching articles on mount:", error);
       });
-  }, [page]);
+  }, [page, reloadFlag]);
+
+  //是否有更多
+  useEffect(() => {
+    const observe = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          console.log("IntersectionObserver>>>", page);
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 1.0 }
+    );
+    if (loader.current) {
+      observe.observe(loader.current);
+    }
+    return () => {
+      if (loader.current) {
+        observe.unobserve(loader.current);
+      }
+    };
+  }, [hasMore]);
 
   const handleKeydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       console.log("搜索文章:", searchKeyword);
-      setSearchKeyword(searchKeyword.trim());
-      setPage(1); // 重置页码
       setArticles([]); // 清空当前文章列表
+      setSearchKeyword(searchKeyword.trim());
+      setReloadFlag(Date.now());
     }
   };
 
   const handleSearch = () => {
     console.log("搜索文章:", searchKeyword);
-    setSearchKeyword(searchKeyword.trim());
-    setPage(1); // 重置页码
     setArticles([]); // 清空当前文章列表
+    setSearchKeyword(searchKeyword.trim());
+    setReloadFlag(Date.now());
+  };
+
+  const createArticle = () => {
+    router.push("/articles-edit");
   };
 
   return (
@@ -53,7 +96,9 @@ export default function ArticlesManager() {
           <h1 className="title mt-0">文章管理</h1>
           <div className="w-full rounded-3xl bg-white px-10 pt-7 mt-8">
             <div className="flex flex-row justify-between h-10">
-              <button className="btn whitespace-nowrap">+文章新建</button>
+              <button className="btn whitespace-nowrap" onClick={createArticle}>
+                +文章新建
+              </button>
               <div className="flex w-full justify-end">
                 <input
                   className="input w-1/2 mr-3"
@@ -110,6 +155,16 @@ export default function ArticlesManager() {
                   ))}
                 </tbody>
               </table>
+            </div>
+            <div
+              ref={loader}
+              className="h-16 w-full flex items-center justify-center"
+            >
+              {hasMore ? (
+                <div className="text-gray-500">加载更多...</div>
+              ) : (
+                <div className="text-gray-500"></div>
+              )}
             </div>
           </div>
         </div>
