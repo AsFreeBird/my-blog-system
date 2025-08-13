@@ -1,6 +1,5 @@
 import { ApiResponse } from "@/types/api";
-import { ArticleWithRelations } from "@/types/database";
-
+import { Article, ArticleWithRelations } from "@/types/database";
 export const pageSize = 10; // 每页条数
 
 export async function fetchArticles(
@@ -45,6 +44,13 @@ export async function loadArticlesByCategory(
   }
 }
 
+export async function addArticle(article:Article) {
+  await fetch("/api/articles/create",{
+    method:"POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(article),
+  })
+}
 
 // async function fetchArticleById(id: number): Promise<ArticleWithRelations | null> {
 //   const response = await fetch(`/api/articles/${id}`);

@@ -111,8 +111,9 @@ export async function getArticlesbyKeywords(
 }
 
 export async function createArticle(article: Article): Promise<Article | null> {
+  console.log("db createArticle:",article)
   const { data, error } = await supabase
-    .from("article")
+    .from("articles")
     .insert(article)
     .select()
     .single();
