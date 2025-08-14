@@ -114,11 +114,17 @@ export async function createArticle(article: Article): Promise<Article | null> {
   console.log("db createArticle:",article)
   const { data, error } = await supabase
     .from("articles")
-    .insert(article)
+    .insert({
+      title: article.title,
+      content: article.content,
+      summary: article.content,
+      category_id: article.category_id,
+      cover_url: article.cover_url
+    })
     .select()
     .single();
   if (error) {
-    console.error("Error creating article:", error);
+    console.error("Error creating article:", error.message);
     return null;
   }
   return data || null;
@@ -131,6 +137,21 @@ export async function updateArticle(
   const { data, error } = await supabase
     .from("articles")
     .update(article)
+    .eq("id", id)
+    .select()
+    .single()
+    ;
+  if (error) {
+    console.error("Error updating article:", error);
+    return null;
+  }
+  return data || null;
+}
+
+export async function deleteArticle(id:number):Promise<Article | null> {
+  const { data, error } = await supabase
+    .from("articles")
+    .delete()
     .eq("id", id)
     .select()
     .single();

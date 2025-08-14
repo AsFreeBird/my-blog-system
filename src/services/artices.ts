@@ -4,7 +4,7 @@ export const pageSize = 10; // 每页条数
 
 export async function fetchArticles(
   page: number,
-  categoryId:number = 0,
+  categoryId: number = 0,
   keyword: string = ""
 ): Promise<ArticleWithRelations[]> {
   console.log("Fetching articles for page:", page, "categoryId:", categoryId);
@@ -19,7 +19,6 @@ export async function fetchArticles(
   }
   return data.data || [];
 }
-
 
 export async function loadArticlesByCategory(
   id: number,
@@ -44,12 +43,33 @@ export async function loadArticlesByCategory(
   }
 }
 
-export async function addArticle(article:Article) {
-  await fetch("/api/articles/create",{
-    method:"POST",
+export async function addArticle(article: Article) {
+  try {
+    const response = await fetch("/api/articles/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(article),
+    });
+    const data: ApiResponse<Article> = await response.json();
+    console.log("Fetched articles addArticle:", data);
+    return data;
+  } catch (error) {
+    console.error("添加文章:", error);
+    return {
+      success: false,
+      data: [],
+      message: "Failed to fetch addArticle.",
+      errorCode: "SERVER_ERROR",
+    };
+  }
+}
+
+export async function deleteArticle(id: number) {
+  await fetch("/api/articles/delete", {
+    method: "DELETE",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(article),
-  })
+    body: JSON.stringify({ id: id }),
+  });
 }
 
 // async function fetchArticleById(id: number): Promise<ArticleWithRelations | null> {

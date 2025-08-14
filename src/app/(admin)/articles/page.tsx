@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchArticles, pageSize } from "@/services/artices";
-import { ArticleWithRelations } from "@/types/database";
+import { Article, ArticleWithRelations } from "@/types/database";
 import dayjs from "dayjs";
 
 let hasFetchedRef = false;
@@ -89,6 +89,10 @@ export default function ArticlesManager() {
     router.push("/articles-edit");
   };
 
+  const handleDelete = (id:number)=>{
+
+  }
+
   return (
     <html>
       <body className="bg-gray-100">
@@ -147,7 +151,9 @@ export default function ArticlesManager() {
                         <button className="btn py-1 px-2 text-sm mr-2">
                           编辑
                         </button>
-                        <button className="btn py-1 px-2 text-sm bg-red-500 hover:bg-red-600">
+                        <button className="btn py-1 px-2 text-sm bg-red-500 hover:bg-red-600"
+                          onClick={()=>handleDelete(item.id)}
+                        >
                           删除
                         </button>
                       </td>
