@@ -4,9 +4,10 @@ import "./../../globals.css";
 import { useEffect, useRef } from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchArticles, pageSize } from "@/services/artices";
-import { Article, ArticleWithRelations } from "@/types/database";
+import { fetchArticles, pageSize ,deleteArticle} from "@/services/artices";
+import { ArticleWithRelations } from "@/types/database";
 import dayjs from "dayjs";
+import { Toaster ,toast} from "react-hot-toast";
 
 let hasFetchedRef = false;
 
@@ -89,13 +90,24 @@ export default function ArticlesManager() {
     router.push("/articles-edit");
   };
 
-  const handleDelete = (id:number)=>{
-
+  const handleDelete = (id?: number) => {
+    if(id){
+      deleteArticle(id).then((isSuccess)=>{
+        if(isSuccess){
+          toast.success("删除成功");
+          setPage(1);
+          setReloadFlag(Date.now());
+        }else{
+          toast.success("删除失败");
+        }
+      });
+    }
   }
 
   return (
     <html>
       <body className="bg-gray-100">
+        <Toaster position="top-center" />
         <div className="flex flex-col items-center px-20 my-8">
           <h1 className="title mt-0">文章管理</h1>
           <div className="w-full rounded-3xl bg-white px-10 pt-7 mt-8">

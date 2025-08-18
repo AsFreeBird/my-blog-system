@@ -64,12 +64,25 @@ export async function addArticle(article: Article) {
   }
 }
 
-export async function deleteArticle(id: number) {
-  await fetch("/api/articles/delete", {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: id }),
-  });
+export async function deleteArticle(
+  id: number
+): Promise<ApiResponse<boolean>> {
+  try {
+    const response = await fetch(`/api/articles/delete/${id}`, {
+      method: "DELETE",
+    });
+    const data: ApiResponse<boolean> = await response.json();
+    console.log("delete Article response:", data);
+    return data;
+  } catch (error) {
+    console.error("删除文章:", error);
+    return {
+      success: false,
+      data: false,
+      message: "Failed to fetch delete Article.",
+      errorCode: "SERVER_ERROR",
+    };
+  }
 }
 
 // async function fetchArticleById(id: number): Promise<ArticleWithRelations | null> {

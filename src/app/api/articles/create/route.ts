@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     
     const response: ApiResponse<Article> = {
       success: true,
-      data: null,
+      data: article,
       message: "add Article fetched successfully.",
     };
     console.log("Fetched add articles>>>:", JSON.stringify(article, null, 2));

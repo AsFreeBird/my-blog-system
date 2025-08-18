@@ -8,7 +8,10 @@ import { getCategories } from "@/lib/db/category";
 import { Category, Tag } from "@/types/database";
 import { Article } from "@/types/database";
 import { addArticle as insertArticle } from "@/services/artices";
+import { useRouter } from "next/navigation";
+import { Toaster, toast } from "react-hot-toast";
 export default function ArticleEdit() {
+  const router = useRouter();
   const [title, setTitle] = useState<string>("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -84,19 +87,43 @@ export default function ArticleEdit() {
       return alert("请输入文章内容");
     }
     const article: Article = {
+      user_id: "1",
       title: title,
       content: content,
       summary: content,
       category_id: category.id,
       cover_url: "https://picsum.photos/seed/15/300/200",
+      create_date: formatDate(new Date()),
     };
     insertArticle(article).then((articl) => {
-      console.log("insertArticle",articl)
+      if (articl) {
+        toast.success("创建成功！");
+        router.back();
+      }
     });
   };
+
+  function formatDate(date: Date) {
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return (
+      date.getFullYear() +
+      "-" +
+      pad(date.getMonth() + 1) +
+      "-" +
+      pad(date.getDate()) +
+      " " +
+      pad(date.getHours()) +
+      ":" +
+      pad(date.getMinutes()) +
+      ":" +
+      pad(date.getSeconds())
+    );
+  }
+
   return (
     <html>
       <body className="bg-gray-100 py-8 px-52">
+        <Toaster position="top-center" />
         <div className="flex flex-col rounded-xl bg-white overflow-auto">
           <h1 className="title text-center">文章编辑</h1>
           <h3 className="px-9 font-medium text-base mt-6">文章标题</h3>

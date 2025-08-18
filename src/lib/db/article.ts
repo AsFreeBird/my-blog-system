@@ -111,16 +111,9 @@ export async function getArticlesbyKeywords(
 }
 
 export async function createArticle(article: Article): Promise<Article | null> {
-  console.log("db createArticle:",article)
   const { data, error } = await supabase
     .from("articles")
-    .insert({
-      title: article.title,
-      content: article.content,
-      summary: article.content,
-      category_id: article.category_id,
-      cover_url: article.cover_url
-    })
+    .insert(article)
     .select()
     .single();
   if (error) {
@@ -148,16 +141,15 @@ export async function updateArticle(
   return data || null;
 }
 
-export async function deleteArticle(id:number):Promise<Article | null> {
-  const { data, error } = await supabase
+export async function deleteArticle(id:number):Promise<boolean> {
+  console.log("delete article db",id);
+  const { error } = await supabase
     .from("articles")
     .delete()
-    .eq("id", id)
-    .select()
-    .single();
+    .eq("id", id);
   if (error) {
-    console.error("Error updating article:", error);
-    return null;
+    console.error("Error delete article:", error);
+    return false;
   }
-  return data || null;
+  return true;
 }
