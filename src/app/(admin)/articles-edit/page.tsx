@@ -8,10 +8,14 @@ import { getCategories } from "@/lib/db/category";
 import { Category, Tag } from "@/types/database";
 import { Article } from "@/types/database";
 import { addArticle as insertArticle } from "@/services/artices";
-import { useRouter } from "next/navigation";
+import { useRouter ,useSearchParams} from "next/navigation";
 import { Toaster, toast } from "react-hot-toast";
 export default function ArticleEdit() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const isEdit = Boolean(id);
+  
   const [title, setTitle] = useState<string>("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);

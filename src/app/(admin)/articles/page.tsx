@@ -4,7 +4,7 @@ import "./../../globals.css";
 import { useEffect, useRef } from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchArticles, pageSize ,deleteArticle} from "@/services/artices";
+import { fetchArticles, pageSize ,deleteArticle,getArticleById} from "@/services/artices";
 import { ArticleWithRelations } from "@/types/database";
 import dayjs from "dayjs";
 import { Toaster ,toast} from "react-hot-toast";
@@ -104,6 +104,15 @@ export default function ArticlesManager() {
     }
   }
 
+  const handleEdit = (id?: number) => {
+    console.log("handle edit:",id);
+    if(id){
+      router.push(`/articles-edit?id=${id}`);
+      getArticleById(id).then((item)=>{
+      });
+    }
+  }
+
   return (
     <html>
       <body className="bg-gray-100">
@@ -160,7 +169,8 @@ export default function ArticlesManager() {
                         {dayjs(item.create_date).format("YYYY-MM-DD")}
                       </td>
                       <td className="w-2/12 px-4 py-2 text-left ">
-                        <button className="btn py-1 px-2 text-sm mr-2">
+                        <button className="btn py-1 px-2 text-sm mr-2" 
+                          onClick={()=>handleEdit(item.id)}>
                           编辑
                         </button>
                         <button className="btn py-1 px-2 text-sm bg-red-500 hover:bg-red-600"

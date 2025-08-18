@@ -85,12 +85,12 @@ export async function deleteArticle(
   }
 }
 
-// async function fetchArticleById(id: number): Promise<ArticleWithRelations | null> {
-//   const response = await fetch(`/api/articles/${id}`);
-//   const data: ApiResponse<ArticleWithRelations> = await response.json();
-//   console.log("Fetched article by ID:", data);
-//   if (!data.success) {
-//     return null;
-//   }
-//   return data.data || null;
-// }
+export async function getArticleById(id: number): Promise<ArticleWithRelations | null> {
+  const response = await fetch(`/api/articles/${id}`);
+  const data: ApiResponse<ArticleWithRelations> = await response.json();
+  console.log("Fetched article by ID:", data);
+  if (!data.success) {
+    return null;
+  }
+  return data.data || null;
+}

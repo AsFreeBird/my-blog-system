@@ -9,7 +9,7 @@ export async function GET(request: NextRequest,{params}:{params:{id:number}}){
     console.log("Fetching article with ID:", id);
     try {
         const article = await getArticleById(id);
-        const response:ApiResponse<Article> = {
+        const response:ApiResponse<Article|null> = {
             success: true,
             data: article,
             message: "Article fetched successfully.",
