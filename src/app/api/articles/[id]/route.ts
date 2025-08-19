@@ -3,7 +3,7 @@ import { getArticleById } from "@/lib/db/article";
 import { ApiResponse } from "@/types/api";
 import { Article } from "@/types/database";
 
-export async function GET(request: NextRequest,{params}:{params:{id:number}}){
+export async function GET(request: NextRequest,{params}:{params:{id:string}}){
     const { id } = params;
     
     console.log("Fetching article with ID:", id);

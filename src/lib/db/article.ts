@@ -50,7 +50,7 @@ export async function getArticlesWithRelation(
   return normalized;
 }
 
-export async function getArticleById(id: number): Promise<Article | null> {
+export async function getArticleById(id: string): Promise<Article | null> {
   const { data, error } = await supabase
     .from("articles")
     .select("*")

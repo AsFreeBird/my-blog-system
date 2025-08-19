@@ -85,7 +85,7 @@ export async function deleteArticle(
   }
 }
 
-export async function getArticleById(id: number): Promise<ArticleWithRelations | null> {
+export async function getArticleById(id: string): Promise<ArticleWithRelations | null> {
   const response = await fetch(`/api/articles/${id}`);
   const data: ApiResponse<ArticleWithRelations> = await response.json();
   console.log("Fetched article by ID:", data);

@@ -4,7 +4,7 @@ import "./../../globals.css";
 import { useEffect, useRef } from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchArticles, pageSize ,deleteArticle,getArticleById} from "@/services/artices";
+import { fetchArticles, pageSize ,deleteArticle} from "@/services/artices";
 import { ArticleWithRelations } from "@/types/database";
 import dayjs from "dayjs";
 import { Toaster ,toast} from "react-hot-toast";
@@ -108,8 +108,7 @@ export default function ArticlesManager() {
     console.log("handle edit:",id);
     if(id){
       router.push(`/articles-edit?id=${id}`);
-      getArticleById(id).then((item)=>{
-      });
+      
     }
   }
 
