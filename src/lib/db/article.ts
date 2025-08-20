@@ -26,7 +26,7 @@ export async function getArticlesWithRelation(
   if (categoryId && categoryId > 0) {
     query = query.eq("category_id", categoryId.toString());
   }
-  
+
   if (keyword && keyword.trim() !== "") {
     query = query.ilike("title", `%${keyword}%`);
   }
@@ -50,18 +50,42 @@ export async function getArticlesWithRelation(
   return normalized;
 }
 
-export async function getArticleById(id: string): Promise<Article | null> {
+export async function getArticleWithRelationById(id: string) {
   const { data, error } = await supabase
     .from("articles")
-    .select("*")
-    .eq("id", id)
-    .single();
+    .select(
+      `
+      *,
+      category:category_id (*),
+      article_tags (
+        tag:tag_id (
+          id, text, create_date
+        )
+      )
+      `
+    )
+    .eq("id", id) // 根据主键 id 查
+    .single(); // 返回单条数据（不是数组）
+
   if (error) {
-    console.error("Error fetching article by ID:", error);
+    console.error("Error fetching article by id:", error);
     return null;
   }
-  return data || null;
+  return data;
 }
+
+// export async function getArticleById(id: string): Promise<Article | null> {
+//   const { data, error } = await supabase
+//     .from("articles")
+//     .select("*")
+//     .eq("id", id)
+//     .single();
+//   if (error) {
+//     console.error("Error fetching article by ID:", error);
+//     return null;
+//   }
+//   return data || null;
+// }
 
 export async function getArticlesByCategory(
   categoryId: number,
@@ -132,8 +156,7 @@ export async function updateArticle(
     .update(article)
     .eq("id", id)
     .select()
-    .single()
-    ;
+    .single();
   if (error) {
     console.error("Error updating article:", error);
     return null;
@@ -141,12 +164,9 @@ export async function updateArticle(
   return data || null;
 }
 
-export async function deleteArticle(id:number):Promise<boolean> {
-  console.log("delete article db",id);
-  const { error } = await supabase
-    .from("articles")
-    .delete()
-    .eq("id", id);
+export async function deleteArticle(id: number): Promise<boolean> {
+  console.log("delete article db", id);
+  const { error } = await supabase.from("articles").delete().eq("id", id);
   if (error) {
     console.error("Error delete article:", error);
     return false;

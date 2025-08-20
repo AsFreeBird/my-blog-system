@@ -7,10 +7,11 @@ import { ArticleWithRelations } from "@/types/database";
 
 import { fetchArticles, pageSize } from "@/services/artices";
 import { fetchCategories } from "@/services/categories";
-
+import { useRouter } from "next/navigation";
 let hasFetchedRef = false;
 
 export default function Home() {
+  const router = useRouter();
   const [articles, setArticles] = useState<ArticleWithRelations[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
@@ -72,7 +73,11 @@ export default function Home() {
       }
     };
   }, [hasMore]);
-
+  const jumpDetail = (id?: number) => {
+    // 跳转到文章详情页
+    console.log("跳转到文章详情页，ID:", id);
+    router.push(`/article/${id}`);
+  }
   useEffect(() => {
     fetchCategories()
       .then((categories) => {
@@ -149,7 +154,9 @@ export default function Home() {
           </div>
           <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 max-w-screen-xl w-full px-16 mt-5">
             {articles.map((article) => (
-              <ArticleCard key={article.id} articleWithRelations={article} />
+              <ArticleCard key={article.id} articleWithRelations={article} 
+              handleClick={() => jumpDetail(article.id)}
+              />
             ))}
           </div>
           <div

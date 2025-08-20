@@ -2,13 +2,15 @@
 import { ArticleWithRelations } from "@/types/database";
 type Props = {
   articleWithRelations: ArticleWithRelations;
+  handleClick?: () => void; // 可选的点击处理函数
 };
 
 export default function ArticleCard({
-  articleWithRelations
+  articleWithRelations,
+  handleClick = () => {}, // 添加默认的点击处理函数
 }: Props) {
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden border flex flex-row transition hover:shadow-lg max-w-full h-60 md:h-48 ">
+    <div className="bg-white rounded-xl shadow-md overflow-hidden border flex flex-row transition hover:shadow-lg max-w-full h-60 md:h-48 " onClick={handleClick}> 
       {/* 封面图 */}
       <div className="w-full md:w-1/4 h-32 md:h-auto overflow-hidden">
         <img
@@ -27,7 +29,7 @@ export default function ArticleCard({
           </h2>
 
           {/* 摘要 */}
-          <p className="text-gray-600 text-xs mb-3 line-clamp-2">{articleWithRelations.summary}</p>
+          <p className="text-gray-600 text-xs mb-3 line-clamp-2">{articleWithRelations.summary?articleWithRelations.summary:articleWithRelations.content}</p>
 
           {/* 分类 */}
           <span className="text-xs text-gray-500">分类：</span>

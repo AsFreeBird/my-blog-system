@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getArticleById, updateArticle } from "@/lib/db/article";
+import { getArticleWithRelationById, updateArticle } from "@/lib/db/article";
 import { ApiResponse } from "@/types/api";
-import { Article } from "@/types/database";
+import { Article, ArticleWithRelations } from "@/types/database";
 export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -40,8 +40,8 @@ export async function GET(
 
   console.log("Fetching article with ID:", id);
   try {
-    const article = await getArticleById(id);
-    const response: ApiResponse<Article | null> = {
+    const article = await getArticleWithRelationById(id);
+    const response: ApiResponse<ArticleWithRelations | null> = {
       success: true,
       data: article,
       message: "Article fetched successfully.",
