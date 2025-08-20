@@ -64,6 +64,30 @@ export async function addArticle(article: Article) {
   }
 }
 
+export async function updateArticle(
+  id: number,
+  article: Article
+): Promise<ApiResponse<Article>> {  
+  try {
+    const response = await fetch(`/api/articles/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(article),
+    });
+    const data: ApiResponse<Article> = await response.json();
+    console.log("Fetched articles updateArticle:", data);
+    return data;
+  } catch (error) {
+    console.error("更新文章:", error);
+    return {
+      success: false,
+      data: null,
+      message: "Failed to fetch updateArticle.",
+      errorCode: "SERVER_ERROR",
+    };
+  }
+}
+
 export async function deleteArticle(
   id: number
 ): Promise<ApiResponse<boolean>> {

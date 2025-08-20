@@ -9,6 +9,7 @@ import { Article, ArticleWithRelations, Category, Tag } from "@/types/database";
 import {
   getArticleById,
   addArticle as insertArticle,
+  updateArticle,
 } from "@/services/artices";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Toaster, toast } from "react-hot-toast";
@@ -45,7 +46,9 @@ export default function ArticleEdit() {
         const selectedCategory = categories.find(
           (cat) => cat.id === articleWithRelations?.category_id
         );
+        console.log("Selected category:", selectedCategory);
         if (selectedCategory) {
+          console.log("Selected category:", selectedCategory);
           setCatogory(selectedCategory);
         }
       }
@@ -124,14 +127,16 @@ export default function ArticleEdit() {
     };
     console.log(article);
     if (isEdit) {
+      updateArticle(article.id!, article).then((articl) => {
+        if (articl) {
+          toast.success("修改成功！");
+          router.back();
+        }
+      });
     } else {
       insertArticle(article).then((articl) => {
         if (articl) {
-          if (isEdit) {
-            toast.success("修改成功！");
-          } else {
-            toast.success("创建成功！");
-          }
+          toast.success("创建成功！");
           router.back();
         }
       });
@@ -249,15 +254,17 @@ export default function ArticleEdit() {
           <h3 className="px-9 font-medium text-base mt-6">正文内容</h3>
           <textarea
             className="mx-9 mt-2 h-60 border border-gray-300 
-          rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={(e) => {
               setArticle((prev) => ({ ...prev!, content: e.target.value }));
             }}
-          >
-            {articleWithRelations?.content
-              ? articleWithRelations?.content
-              : articleWithRelations?.summary}
-          </textarea>
+            value={
+              articleWithRelations?.content
+                ? articleWithRelations?.content
+                : articleWithRelations?.summary
+            }
+          />
+
           <button className="btn mt-7 mx-9 mb-8" onClick={addArticle}>
             保存文章
           </button>
