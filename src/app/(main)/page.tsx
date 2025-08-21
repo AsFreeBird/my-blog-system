@@ -76,7 +76,7 @@ export default function Home() {
   const jumpDetail = (id?: number) => {
     // 跳转到文章详情页
     console.log("跳转到文章详情页，ID:", id);
-    router.push(`/article/${id}`);
+    router.push(`/detail/${id}`);
   }
   useEffect(() => {
     fetchCategories()
